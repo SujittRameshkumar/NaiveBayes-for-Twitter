@@ -43,7 +43,7 @@ pos_test_tweets = []
 for line in pos_file:
     pos_test_tweets.append(line.decode('utf-8'))
 
-
+#Training and Testing Data gathered and stored in lists of of individual tweet strings. 
 
 num_pos_examples = len(pos_train_tweets)
 num_neg_examples = len(neg_train_tweets)
@@ -64,10 +64,10 @@ total_num_of_neg_words= 0
 total_num_of_pos_words= 0
 total_num_of_neu_words= 0
 
+# Creating word banks of positive, negative, and neutral words from training tweets
 for sent in neg_train_tweets:
     word_list = sent.split()
     for word in word_list:
-        # word = word.lower()
         vocab_all[word]+=1
         total_num_of_neg_words+=1
         vocab_negative[word]+=1
@@ -75,7 +75,6 @@ for sent in neg_train_tweets:
 for sent in pos_train_tweets:
     word_list = sent.split()
     for word in word_list:
-        # word = word.lower()
         vocab_all[word]+=1
         total_num_of_pos_words+=1
         vocab_positive[word]+=1
@@ -83,7 +82,6 @@ for sent in pos_train_tweets:
 for sent in neu_train_tweets:
     word_list = sent.split()
     for word in word_list:
-        # word = word.lower()
         vocab_all[word]+=1
         total_num_of_neu_words+=1
         vocab_neutral[word]+=1
@@ -98,8 +96,9 @@ print("vocab_size: ",vocab_size)
 # alpha = 2 ---> 0.8761290322580645
 # alpha = 10 ---> 0.8696774193548387
 
-alpha = 10
+alpha = 1
 
+# These methods run the Naive Bayes Algorithm for each word 
 def find_pos_prob_sent(list_words):
   pos_prob_sent = pos_class_prob
 
@@ -114,6 +113,7 @@ def find_pos_prob_sent(list_words):
 
     pos_prob_sent = pos_prob_sent*word_prob 
 
+  # P(H|E)
   return pos_prob_sent
 
 def find_neg_prob_sent(list_words):
@@ -155,10 +155,12 @@ prediction_list = []
 for sent in pos_test_tweets:
     word_list = sent.split()
     prob = {}
+    # retrieving the probability for each possible outcome. 
     pos_prob = find_pos_prob_sent(word_list)
     neg_prob = find_neg_prob_sent(word_list)
     neu_prob = find_neu_prob_sent(word_list)
 
+    
     actual = "+ve"
 
     prob[pos_prob] = "+ve"
@@ -166,15 +168,9 @@ for sent in pos_test_tweets:
     prob[neu_prob] = "+/-ve"
     print(prob)
 
+    #ideally, pos_prob would have the highest value. This would make the prediction equal to the actual value
     prediction = prob[max(prob, key=float)]
 
-
-    # if neg_prob > pos_prob:
-    #     prediction = "-ve"
-    # elif neu_prob > pos_prob:
-    #     prediction = "+/-ve"
-    # else:
-    #     prediction = "+ve"
 
     pred = (sent, actual, prediction)
     prediction_list.append(pred)
@@ -203,13 +199,6 @@ for sent in neg_test_tweets:
 
     prediction = prob[max(prob, key=float)]
 
-    # if pos_prob > neg_prob:
-    #     prediction = "+ve"
-    # elif neu_prob > neg_prob:
-    #     prediction = "+/-ve"
-    # else:
-    #     prediction = "-ve"
-
     pred = (sent, actual, prediction)
     prediction_list.append(pred)
 
@@ -237,12 +226,6 @@ for sent in neu_test_tweets:
     print(prob)
 
     prediction = prob[max(prob, key=float)]
-    # if pos_prob > neg_prob:
-    #     prediction = "+ve"
-    # elif neg_prob > neu_prob:
-    #     prediction = "-ve"
-    # else:
-    #     prediction = "+/-ve"
 
     pred = (sent, actual, prediction)
     prediction_list.append(pred)
